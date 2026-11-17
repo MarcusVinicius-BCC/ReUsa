@@ -19,7 +19,7 @@ async function exerciseMessageClear(request, { deliver = async () => {}, injectN
   const count = async (actor, threadId) => (await inbox(actor)).find(t => t.id === threadId)?.unreadCount || 0;
   const link = id => `/mensagens/ana?thread=${id}`;
   const createThread = async index => {
-    const created = await send('/api/posts', owner, { title: `Mesa ${index} ${suffix}`, description: 'Mesa para reutilização na comunidade.', category: 'Móveis', goal: 'Doação', condition: 'Bom estado', location: 'Belém, PA', imageUrl: 'https://images.example.test/mesa.jpg' });
+    const created = await send('/api/posts', owner, { title: `Mesa ${index} ${suffix}`, description: 'Mesa para reutilização na comunidade.', category: 'Móveis', goal: 'Doação', condition: 'Bom estado', location: 'Belém, PA', imageUrl: 'https://images.example.test/mesa.jpg', disassembly: 'no', stairs: 'no', vehicle: 'car' });
     assert.equal(created.response.status, 201);
     const thread = await send('/api/messages/threads', buyer, { postId: created.payload.post.id });
     assert.equal(thread.response.status, 201);

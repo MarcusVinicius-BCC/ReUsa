@@ -762,8 +762,10 @@ A migração 014_negotiation_followup.sql cria o histórico e o controle de lemb
   geolocalização, escolher raio de 2 a 100 km. O resultado é aproximado e contém
   apenas anúncios cuja região foi cadastrada. A posição de consulta não é salva.
 - **Transporte:** nova publicação e edição de transporte no detalhe permitem
-  medidas, peso, desmontagem, escadas, veículo e cuidados com retirada. O dono
-  pode alterar enquanto o anúncio estiver disponível. Coordenadas de anúncios
+  medidas, peso, desmontagem, escadas, veículo e cuidados com retirada.
+  Novos anúncios exigem informar se o item desmonta, se há escadas e o transporte
+  recomendado. Medidas, peso, observações e região aproximada são opcionais.
+  O dono pode alterar enquanto o anúncio estiver disponível. Coordenadas de anúncios
   são arredondadas a duas casas decimais antes de armazenamento e não são
   expostas na resposta pública. Informações exatas de entrega ficam no acordo.
 - **Perguntas públicas:** interessados perguntam no detalhe do item; somente

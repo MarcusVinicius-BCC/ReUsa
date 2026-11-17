@@ -323,7 +323,7 @@ function registerPostgresRoutes(app, { db, jwtSecret, createToken, uid, publishe
   });
   app.post('/api/posts', authenticate, postUpload, async (req, res, next) => {
     try {
-      let extras; try {extras=postExtras(req.body);} catch(error){return res.status(error.status||400).json({error:error.message});}
+      let extras; try {extras=postExtras(req.body,{requireTransport:true});} catch(error){return res.status(error.status||400).json({error:error.message});}
       const body = req.body || {};
       if (!String(body.title || '').trim() || !String(body.description || '').trim() || !String(body.category || '').trim()) return res.status(400).json({ error: 'Informe o título, a descrição e a categoria do item.' });
       if (String(body.title).trim().length > 140 || String(body.description).trim().length > 3000 || String(body.category).trim().length > 60) return res.status(400).json({ error: 'One or more fields exceed the allowed length' });

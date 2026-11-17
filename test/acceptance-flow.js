@@ -14,7 +14,7 @@ async function exerciseAcceptanceFlow(request) {
   const proposalVersions = new Map();
   const send = (path, actor, body = {}, method = 'POST') => request(path, { method, headers:actor.headers, body:JSON.stringify(body) });
   const setup = async (withOther = true) => {
-    const created = await send('/api/posts',seller,{ title:'Mesa para reutilização', description:'Mesa de estudo em bom estado.', category:'Móveis', goal:'Venda', condition:'Bom estado', location:'Belém, PA', imageUrl:'https://images.example.test/mesa.jpg' });
+    const created = await send('/api/posts',seller,{ title:'Mesa para reutilização', description:'Mesa de estudo em bom estado.', category:'Móveis', goal:'Venda', condition:'Bom estado', location:'Belém, PA', imageUrl:'https://images.example.test/mesa.jpg', disassembly:'no', stairs:'no', vehicle:'car' });
     assert.equal(created.response.status,201);
     const id=created.payload.post.id;
     const offer=async(actor,amount)=>{

@@ -4,6 +4,7 @@ const { spawn } = require('node:child_process');
 const http = require('node:http');
 const path = require('node:path');
 const { postgresConfigured } = require('../storage/database-config');
+const { requiredTransport } = require('./transport-flow');
 
 const enabled = postgresConfigured();
 
@@ -51,7 +52,7 @@ test('PostgreSQL provider persists a post, thread, reservation and outbox event'
     assert.equal(owner.response.status, 201);
     assert.equal(interested.response.status, 201);
     const auth = (token) => ({ ...headers, Authorization: `Bearer ${token}` });
-    const created = await request(baseUrl, '/api/posts', { method: 'POST', headers: auth(owner.payload.token), body: JSON.stringify({ title: 'Post PostgreSQL', description: 'Item de integração.', category: 'Móveis', goal: 'Venda', location: 'Belem, PA', imageUrl: 'https://example.test/item.jpg' }) });
+    const created = await request(baseUrl, '/api/posts', { method: 'POST', headers: auth(owner.payload.token), body: JSON.stringify({ ...requiredTransport, title: 'Post PostgreSQL', description: 'Item de integração.', category: 'Móveis', goal: 'Venda', location: 'Belem, PA', imageUrl: 'https://example.test/item.jpg' }) });
     assert.equal(created.response.status, 201);
     const postId = created.payload.post.id;
     assert.equal(created.payload.post.goal, 'Venda');
@@ -142,6 +143,7 @@ test('PostgreSQL provider persists a post, thread, reservation and outbox event'
     assert.equal(saved.accepting, false);
     await require('./acceptance-flow').exerciseAcceptanceFlow((path, options) => request(baseUrl, path, options));
     await require('./offer-cancellation-flow').exerciseOfferCancellation((path, options) => request(baseUrl, path, options));
+    await require('./transport-flow').exerciseTransportRequirements((path, options) => request(baseUrl, path, options));
     await require('./post-media-flow').exercisePostMedia((path, options) => request(baseUrl, path, options), {
       rawFetch: (url, options) => fetch(`${baseUrl}${url}`, options)
     });

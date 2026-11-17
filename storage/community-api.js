@@ -3,7 +3,12 @@ const {isLikelyResidentialAddress}=require('./location-validation');
 const fail=(status,message)=>{throw Object.assign(new Error(message),{status})};
 const clean=(v,min,max,label)=>{if(typeof v!=='string'||v.trim().length<min||v.trim().length>max)fail(400,label+': informe entre '+min+' e '+max+' caracteres.');return v.trim()};
 const fold=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-function postExtras(body={}){
+function postExtras(body={}, {requireTransport=false}={}){
+ if(requireTransport){
+  if(!['yes','no'].includes(body.disassembly))fail(400,'Informe se o item desmonta para a retirada.');
+  if(!['yes','no'].includes(body.stairs))fail(400,'Informe se há escadas no local de retirada.');
+  if(!['walking','car','van','truck'].includes(body.vehicle))fail(400,'Selecione o transporte recomendado para retirar o item.');
+ }
  const info={};
  for(const [key,max] of [['dimensions',120],['transportNotes',500]])info[key]=body[key]?clean(body[key],1,max,key):'';
  for(const key of ['disassembly','stairs']){const v=body[key]||'unknown';if(!['yes','no','unknown'].includes(v))fail(400,'Opção de transporte inválida.');info[key]=v;}
@@ -48,7 +53,20 @@ function registerCommunityRoutes(app,{postgres,sqlite,authenticate,flush,clock=(
  app.post('/api/questions/:id/answer',authenticate,route(async(req,res)=>{
   const answer=clean(req.body?.answer,5,1000,'Resposta');await work(async c=>{const q=await one(c,'SELECT q.*,p.author_id,p.title FROM post_questions q JOIN posts p ON p.id=q.post_id WHERE q.id=$1',[req.params.id]);if(!q)fail(404,'Pergunta não encontrada.');if(q.author_id!==req.user.id)fail(403,'Somente o anunciante pode responder.');await c.query('UPDATE post_questions SET answer=$1,answered_at=$2 WHERE id=$3',[answer,clock().toISOString(),q.id]);await notify(c,q.asker_id,'Sua pergunta foi respondida',q.title+': confira a resposta do anunciante.','/anuncios/'+q.post_id)});res.json({ok:true});
  }));
- app.put('/api/posts/:id/transport',authenticate,route(async(req,res)=>{const extras=postExtras(req.body);await work(async c=>{const p=await one(c,'SELECT * FROM posts WHERE id=$1'+(postgres?' FOR UPDATE':''),[req.params.id]);if(!p)fail(404,'Anúncio não encontrado.');if(p.author_id!==req.user.id)fail(403,'Somente o anunciante pode alterar.');if(p.status!=='Disponível')fail(409,'Não altere o transporte de um item reservado ou encerrado.');if(req.body.areaLat===undefined&&req.body.areaLng===undefined){extras.lat=p.area_lat;extras.lng=p.area_lng;}await c.query('UPDATE posts SET transport_json=$1,area_lat=$2,area_lng=$3 WHERE id=$4',[extras.json,extras.lat,extras.lng,p.id])});res.json({ok:true})}));
+ app.put('/api/posts/:id/transport',authenticate,route(async(req,res)=>{
+  await work(async c=>{
+   const p=await one(c,'SELECT * FROM posts WHERE id=$1'+(postgres?' FOR UPDATE':''),[req.params.id]);
+   if(!p)fail(404,'Anúncio não encontrado.');
+   if(p.author_id!==req.user.id)fail(403,'Somente o anunciante pode alterar.');
+   if(p.status!=='Disponível')fail(409,'Não altere o transporte de um item reservado ou encerrado.');
+   const previous=JSON.parse(p.transport_json||'{}');
+   const body=req.body||{};
+   const extras=postExtras({...previous,...body},{requireTransport:true});
+   if(body.areaLat===undefined&&body.areaLng===undefined){extras.lat=p.area_lat;extras.lng=p.area_lng;}
+   await c.query('UPDATE posts SET transport_json=$1,area_lat=$2,area_lng=$3 WHERE id=$4',[extras.json,extras.lat,extras.lng,p.id]);
+  });
+  res.json({ok:true});
+ }));
  app.get('/api/needs',route(async(req,res)=>res.json({needs:await work(c=>rows(c,"SELECT n.*,u.name AS requester FROM material_needs n JOIN users u ON u.id=n.user_id WHERE status='open' AND deadline>=$1 ORDER BY created_at DESC",[clock().toISOString().slice(0,10)]))})));
  app.post('/api/needs',authenticate,route(async(req,res)=>{
   const title=clean(req.body?.title,5,100,'O que você precisa'),description=clean(req.body?.description,20,1500,'Descrição'),city=clean(req.body?.city,3,100,'Cidade'),deadline=clean(req.body?.deadline,10,10,'Prazo');

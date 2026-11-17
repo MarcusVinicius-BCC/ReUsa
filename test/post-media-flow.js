@@ -18,7 +18,7 @@ async function exercisePostMedia(request, { rawFetch }) {
     return { Authorization: `Bearer ${result.payload.token}` };
   };
   const owner = await register('owner'), other = await register('other');
-  const fields = { title: `Mesa com vídeo ${suffix}`, description: 'Mesa em bom estado, mostrada em fotos e vídeos para reutilização.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Belém, PA' };
+  const fields = { title: `Mesa com vídeo ${suffix}`, description: 'Mesa em bom estado, mostrada em fotos e vídeos para reutilização.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Belém, PA', disassembly: 'no', stairs: 'no', vehicle: 'car' };
   const form = (values = fields) => {
     const data = new FormData();
     for (const [key, value] of Object.entries(values)) data.set(key, Array.isArray(value) ? JSON.stringify(value) : value);
@@ -35,6 +35,9 @@ async function exercisePostMedia(request, { rawFetch }) {
   const created = await create(single);
   assert.equal(created.response.status, 201, JSON.stringify(created.payload));
   const onlyVideo = created.payload.post;
+  assert.equal(onlyVideo.transport.disassembly, 'no');
+  assert.equal(onlyVideo.transport.stairs, 'no');
+  assert.equal(onlyVideo.transport.vehicle, 'car');
   assert.equal(onlyVideo.imageUrl, '/media/video-placeholder.svg');
   assert.deepEqual(onlyVideo.imageUrls, []);
   assert.equal(onlyVideo.videos.length, 1);

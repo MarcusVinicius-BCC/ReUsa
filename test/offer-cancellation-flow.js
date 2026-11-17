@@ -12,7 +12,7 @@ async function exerciseOfferCancellation(request){
  const detail=async(post,actor=buyer)=>(await request(`/api/posts/${post}/negotiation`,{headers:actor.headers})).payload.negotiation;
  const list=async actor=>(await request('/api/negotiations',{headers:actor.headers})).payload.negotiations;
  const setup=async()=>{
-  const created=await send('/api/posts',seller,{title:`Oferta cancelável ${suffix}`,description:'Mesa de estudo para reutilização.',category:'Móveis',goal:'Venda',condition:'Bom estado',location:'Belém, PA',imageUrl:'https://images.example.test/cancelar.jpg'});
+  const created=await send('/api/posts',seller,{title:`Oferta cancelável ${suffix}`,description:'Mesa de estudo para reutilização.',category:'Móveis',goal:'Venda',condition:'Bom estado',location:'Belém, PA',imageUrl:'https://images.example.test/cancelar.jpg',disassembly:'no',stairs:'no',vehicle:'car'});
   assert.equal(created.response.status,201);const post=created.payload.post.id;
   const offer=async(actor=buyer,amount=1500)=>{
    assert.equal((await send('/api/messages/threads',actor,{postId:post})).response.status,201);

@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const os = require('node:os');
 const path = require('node:path');
+const { requiredTransport } = require('./transport-flow');
 
 let server;
 let baseUrl;
@@ -199,6 +200,7 @@ test('multipart post submission preserves all required item fields', async () =>
   form.set('category', 'Móveis');
   form.set('goal', 'Doação');
   form.set('location', 'Pinheiros, São Paulo, SP');
+  Object.entries(requiredTransport).forEach(([key, value]) => form.set(key, value));
   form.set('images', new Blob(['imagem de teste'], { type: 'image/png' }), 'cadeira.png');
 
   const created = await request('/api/posts', {
@@ -215,6 +217,10 @@ test('post media supports videos, preserves edits and rejects invalid uploads at
   await require('./post-media-flow').exercisePostMedia(request, {
     rawFetch: (url, options) => fetch(`${baseUrl}${url}`, options)
   });
+});
+
+test('new posts require transport answers and partial edits preserve them', async () => {
+  await require('./transport-flow').exerciseTransportRequirements(request);
 });
 
 test('CNPJ lookup rejects malformed identifiers before contacting the external service', async () => {
@@ -284,7 +290,7 @@ test('favorites, negotiation status and reviews persist with permission checks',
 
   const created = await request('/api/posts', {
     method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${ownerToken}` },
-    body: JSON.stringify({ title: 'Mesa circular', description: 'Mesa em bom estado para doação.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Belem, PA', imageUrl: 'https://images.example.test/mesa.jpg' })
+    body: JSON.stringify({ ...requiredTransport, title: 'Mesa circular', description: 'Mesa em bom estado para doação.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Belem, PA', imageUrl: 'https://images.example.test/mesa.jpg' })
   });
   assert.equal(created.response.status, 201);
   const postId = created.payload.post.id;
@@ -388,7 +394,7 @@ test('sale posts allow money offers and are completed as sold', async () => {
   const interestedAuth = { ...headers, Authorization: `Bearer ${interested.payload.token}` };
   const created = await request('/api/posts', {
     method: 'POST', headers: ownerAuth,
-    body: JSON.stringify({ title: 'Luminária à venda', description: 'Luminária em ótimo estado.', category: 'Móveis', condition: 'Bom estado', goal: 'Venda', location: 'Belem, PA', imageUrl: 'https://images.example.test/luminaria.jpg' })
+    body: JSON.stringify({ ...requiredTransport, title: 'Luminária à venda', description: 'Luminária em ótimo estado.', category: 'Móveis', condition: 'Bom estado', goal: 'Venda', location: 'Belem, PA', imageUrl: 'https://images.example.test/luminaria.jpg' })
   });
   assert.equal(created.response.status, 201);
   assert.equal(created.payload.post.goal, 'Venda');
@@ -496,7 +502,7 @@ test('clearing messages hides the inbox only for that user until a new message a
   const viewerAuth = { ...headers, Authorization: `Bearer ${viewer.payload.token}` };
   const post = await request('/api/posts', {
     method: 'POST', headers: ownerAuth,
-    body: JSON.stringify({ title: 'Cadeira para conversar', description: 'Item usado em teste de mensagens.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Centro, Sao Paulo, SP', imageUrl: 'https://images.example.test/cadeira.jpg' })
+    body: JSON.stringify({ ...requiredTransport, title: 'Cadeira para conversar', description: 'Item usado em teste de mensagens.', category: 'Móveis', condition: 'Bom estado', goal: 'Doação', location: 'Centro, Sao Paulo, SP', imageUrl: 'https://images.example.test/cadeira.jpg' })
   });
   assert.equal(post.response.status, 201);
 
@@ -552,7 +558,7 @@ test('public listing location rejects exact residential addresses', async () => 
   const rejected = await request('/api/posts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${registration.payload.token}` },
-    body: JSON.stringify({ title: 'Item protegido', description: 'Descrição válida.', category: 'Outros', location: 'Rua das Flores, 123', imageUrl: 'https://images.example.test/item.jpg' })
+    body: JSON.stringify({ ...requiredTransport, title: 'Item protegido', description: 'Descrição válida.', category: 'Outros', location: 'Rua das Flores, 123', imageUrl: 'https://images.example.test/item.jpg' })
   });
   assert.equal(rejected.response.status, 400);
   assert.match(rejected.payload.error, /exact address/i);

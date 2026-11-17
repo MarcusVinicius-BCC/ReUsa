@@ -1261,7 +1261,7 @@ function CreatePostScreen({ onBack, onSuccess }) {
             <Field label="Localização aproximada" icon="location_on" value={postForm.location || ''} onChange={(value) => setPostForm((prev) => ({ ...prev, location: value }))} placeholder="Ex: Santarém, PA" required />
           </section>
 
-          <section className="publish-section"><h3>Retirada e transporte (opcional)</h3><p>Ajude quem vai buscar o item a se organizar.</p><TransportFields value={postForm} onChange={setPostForm}/></section>
+          <section className="publish-section"><h3>Retirada e transporte</h3><p>Ajude quem vai buscar o item a se organizar. Os campos com <strong className="required-mark">*</strong> são obrigatórios.</p><TransportFields value={postForm} onChange={setPostForm}/></section>
           <aside className="publish-tip"><span className="material-symbols-outlined">tips_and_updates</span><span><strong>Dica REUSA+</strong> Fotos claras e uma descrição sincera aumentam as chances de um novo encontro.</span></aside>
           <div className="publish-submit"><button type="submit" className="primary-btn full" disabled={publishing} aria-busy={publishing}><span className="material-symbols-outlined">{publishing ? 'progress_activity' : 'arrow_forward'}</span>{publishing ? 'Publicando anúncio...' : 'Publicar anúncio'}</button><small>{publishing ? 'Aguarde enquanto salvamos seu anúncio.' : 'Você poderá conversar com interessados depois da publicação.'}</small></div>
         </form>

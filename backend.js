@@ -2483,7 +2483,7 @@ async function start() {
   });
 
   app.post('/api/posts', authMiddleware, postUpload, (req, res) => {
-    let extras; try { extras=postExtras(req.body); } catch(error) {return res.status(error.status||400).json({error:error.message});}
+    let extras; try { extras=postExtras(req.body,{requireTransport:true}); } catch(error) {return res.status(error.status||400).json({error:error.message});}
     const { title, description, category, condition, goal, location, chipLabel, chipIcon } = req.body || {};
     const normalizedTitle = String(title || '').trim();
     const normalizedDescription = String(description || '').trim();

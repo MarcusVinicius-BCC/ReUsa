@@ -5,6 +5,21 @@ test('transport coordinates are coarse and invalid transport fields are rejected
  assert.equal(data.lat,-1.45);assert.equal(data.lng,-48.49);assert.equal(JSON.parse(data.json).weightKg,12);
  for(const value of [{areaLat:1},{areaLat:99,areaLng:0},{weightKg:-1},{vehicle:'plane'},{disassembly:'maybe'}])assert.throws(()=>postExtras(value));
 });
+test('required transport answers accept explicit choices without optional measurements or coordinates',()=>{
+ const valid={disassembly:'no',stairs:'yes',vehicle:'walking'};
+ const result=postExtras(valid,{requireTransport:true});
+ const info=JSON.parse(result.json);
+ assert.equal(info.disassembly,'no');assert.equal(info.stairs,'yes');assert.equal(info.vehicle,'walking');
+ assert.equal(info.dimensions,'');assert.equal(info.weightKg,null);assert.equal(info.transportNotes,'');
+ assert.equal(result.lat,null);assert.equal(result.lng,null);
+ for(const key of Object.keys(valid)){
+  const missing={...valid};delete missing[key];
+  assert.throws(()=>postExtras(missing,{requireTransport:true}));
+  for(const value of ['',null,'unknown',[],false])assert.throws(()=>postExtras({...valid,[key]:value},{requireTransport:true}));
+ }
+ const legacy=JSON.parse(postExtras({}).json);
+ assert.equal(legacy.disassembly,'unknown');assert.equal(legacy.stairs,'unknown');assert.equal(legacy.vehicle,'unknown');
+});
 test('search alerts match new available items, persist deduplication and fulfill delivered requests',async()=>{
  const SQL=await require('sql.js')(),db=new SQL.Database();
  db.exec("CREATE TABLE users(id TEXT PRIMARY KEY); INSERT INTO users VALUES('watcher'),('donor'); CREATE TABLE posts(id TEXT PRIMARY KEY,author_id TEXT,title TEXT,description TEXT,category TEXT,location TEXT,status TEXT,created_at TEXT); CREATE TABLE negotiations(id TEXT PRIMARY KEY,status TEXT); CREATE TABLE threads(id TEXT PRIMARY KEY); CREATE TABLE blocked_users(blocker_id TEXT,blocked_id TEXT); CREATE TABLE notifications(id TEXT,user_id TEXT,type TEXT,title TEXT,text TEXT,link TEXT,created_at TEXT)");
