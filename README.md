@@ -1,789 +1,442 @@
-# ReUsa+
-
-> **Economia circular, comunidade e impacto em um só lugar.**
-
-O **ReUsa+** é uma plataforma web para dar uma nova vida a itens que seriam
-descartados. A comunidade pode publicar produtos para **doação, troca ou
-venda**, conversar com interessados, concluir negociações e encontrar pontos
-de coleta.
-
-Além do marketplace comunitário, o sistema oferece mapa colaborativo,
-inspirações de reaproveitamento, notificações, indicadores de impacto e uma
-área administrativa.
-
 <p align="center">
-  <img src="src/assets/reusa-logo.png" alt="Logo ReUsa+" width="220">
+  <img src="src/assets/reusa-logo.png" alt="Logo do ReUsa+" width="180">
 </p>
 
-## Sumário
+<h1 align="center">ReUsa+</h1>
 
-- [Visão geral](#visão-geral)
-- [Funcionalidades](#funcionalidades)
-- [Arquitetura](#arquitetura)
-- [Tecnologias](#tecnologias)
-- [Estrutura do projeto](#estrutura-do-projeto)
-- [Pré-requisitos](#pré-requisitos)
-- [Executar localmente](#executar-localmente)
-- [Configuração](#configuração)
-- [Comandos](#comandos)
-- [Banco de dados](#banco-de-dados)
-- [Serviços distribuídos](#serviços-distribuídos)
-- [APIs externas](#apis-externas)
-- [API própria](#api-própria)
-- [Pagamentos com Stripe](#pagamentos-com-stripe-checkout-e-stripe-connect)
-- [Testes e validação](#testes-e-validação)
-- [Docker](#docker)
-- [Deploy na Railway](#deploy-na-railway)
-- [Segurança](#segurança)
-- [Licença e uso](#licença-e-uso)
+<p align="center">
+  <strong>Uma nova vida para os objetos. Novas possibilidades para a comunidade.</strong><br>
+  Plataforma web de economia circular para doação, troca e venda de produtos.
+</p>
 
-## Visão geral
+<p align="center">
+  <a href="https://reusa.up.railway.app">
+    <img src="https://img.shields.io/badge/Acessar_o_sistema-ReUsa%2B-078653?style=for-the-badge&amp;logo=railway&amp;logoColor=white" alt="Acessar o ReUsa+ na Railway">
+  </a>
+  <a href="https://github.com/MarcusVinicius-BCC/Reusa-/actions/workflows/stripe-checks.yml">
+    <img src="https://github.com/MarcusVinicius-BCC/Reusa-/actions/workflows/stripe-checks.yml/badge.svg" alt="Status da integração contínua">
+  </a>
+</p>
 
-```text
-+----------------------+        +----------------------+
-| React + Vite         |        | PostgreSQL ou SQLite |
-| Interface web        |        | Persistencia         |
-+----------+-----------+        +----------^-----------+
-           | /api                           |
-           v                                |
-+----------------------+                     |
-| Core ReUsa+          +---------------------+
-| Node.js + Express    |
-+----------+-----------+
-           | eventos
-           v
-+----------------------+        +----------------------+
-| RabbitMQ             +------->| Notificacoes         |
-| Outbox transacional  +------->| Impacto ambiental    |
-+----------------------+        +----------------------+
-```
+<p align="center">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&amp;logo=javascript&amp;logoColor=20232A" alt="JavaScript">
+  <img src="https://img.shields.io/badge/React-18-149ECA?style=for-the-badge&amp;logo=react&amp;logoColor=white" alt="React 18">
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&amp;logo=vite&amp;logoColor=white" alt="Vite">
+  <img src="https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&amp;logo=nodedotjs&amp;logoColor=white" alt="Node.js 22">
+  <img src="https://img.shields.io/badge/Express-20232A?style=for-the-badge&amp;logo=express&amp;logoColor=white" alt="Express">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&amp;logo=postgresql&amp;logoColor=white" alt="PostgreSQL">
+</p>
 
-Em desenvolvimento, a aplicação pode funcionar apenas com Node.js e SQLite.
-Em uma instalação completa, o Docker Compose adiciona PostgreSQL, Redis,
-RabbitMQ, o serviço de notificações e o serviço de impacto.
+<p align="center">
+  <img src="https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&amp;logo=rabbitmq&amp;logoColor=white" alt="RabbitMQ">
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&amp;logo=redis&amp;logoColor=white" alt="Redis">
+  <img src="https://img.shields.io/badge/Cloudflare_R2-F38020?style=for-the-badge&amp;logo=cloudflare&amp;logoColor=white" alt="Cloudflare R2">
+  <img src="https://img.shields.io/badge/Stripe-635BFF?style=for-the-badge&amp;logo=stripe&amp;logoColor=white" alt="Stripe">
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&amp;logo=docker&amp;logoColor=white" alt="Docker">
+</p>
+
+<p align="center">
+  <a href="#funcionalidades">Funcionalidades</a> ·
+  <a href="#arquitetura">Arquitetura</a> ·
+  <a href="#executar-localmente">Executar</a> ·
+  <a href="#documentação">Documentação</a> ·
+  <a href="#autor">Autor</a>
+</p>
+
+<p align="center">Desenvolvido por <strong>Marcus Vinicius Campos da Silva</strong>.</p>
+
+---
+
+## Sobre o projeto
+
+O **ReUsa+** conecta pessoas que querem dar um novo destino a produtos e materiais.
+A plataforma reúne publicação de anúncios, iniciativas comunitárias, conversas,
+negociações e acompanhamento da retirada ou entrega em um único lugar.
+
+O projeto foi desenvolvido para incentivar o reaproveitamento, aproximar doadores
+e beneficiários e facilitar o consumo consciente, com uma interface responsiva
+para computadores e dispositivos móveis.
+
+**Sistema publicado:** [https://reusa.up.railway.app](https://reusa.up.railway.app)
 
 ## Funcionalidades
 
-### Comunidade e anúncios
+| Área | O que a plataforma oferece |
+| --- | --- |
+| **Conta e acesso** | Cadastro de pessoas e empresas, login com senha ou Google, verificação de e-mail, recuperação de senha e edição do perfil. |
+| **Anúncios** | Doação, troca e venda; publicação, edição e exclusão; fotos, vídeos, escolha de capa e controle de disponibilidade. |
+| **Descoberta de itens** | Busca, categorias, filtros por cidade/bairro e proximidade, favoritos e alertas de novos anúncios. |
+| **Interações** | Curtidas, comentários, perguntas públicas ao anunciante, mensagens privadas, avaliações e bloqueio de usuários. |
+| **Negociações** | Envio, aceite, recusa e cancelamento de ofertas; reserva de produtos; desistência conforme a etapa; painel de pendências. |
+| **Retirada e entrega** | Proposta de local e horário, aceite do acordo, informações de transporte, lembretes, imprevistos e confirmação de recebimento. |
+| **Pagamentos** | Stripe Checkout e Connect, cadastro de vendedores, consulta de pendências, acompanhamento financeiro, reembolsos e contestações. |
+| **Comunidade** | Campanhas de arrecadação com metas e contribuições, pedidos de itens e acompanhamento dos materiais recebidos. |
+| **Mapa e impacto** | Pontos de coleta, sugestões da comunidade, consulta de rotas e indicadores de reaproveitamento. |
+| **Administração** | Gestão de usuários, suspensão e exclusão administrativa, moderação de anúncios e denúncias e gestão de pontos de coleta. |
 
-- Cadastro de pessoas e empresas;
-- Login com e-mail e senha;
-- Confirmação de e-mail;
-- Login opcional com Google;
-- Feed de publicações;
-- Publicações para doação, troca ou venda;
-- Upload de até oito fotos (5 MB cada) e dois vídeos MP4 ou WebM (50 MB cada) por anúncio;
-- Prévia da foto única sem recorte, escolha da capa e galeria com reprodução de vídeos;
-- Publicação com fotos, vídeos ou ambos, com edição e remoção das mídias;
-- Curtidas, favoritos, comentários e visualizações;
-- Edição e exclusão de anúncios;
-- Status `Disponível`, `Reservado`, `Doado`, `Trocado`, `Vendido` e `Encerrado`.
+### Fotos, vídeos e informações de retirada
 
-### Negociação
+- Até **8 fotos de 5 MB** e **2 vídeos MP4 ou WebM de 50 MB** por anúncio.
+- Prévia da foto única sem recorte, escolha da capa e reprodução dos vídeos na galeria.
+- Publicação com fotos, vídeos ou ambos, incluindo edição e remoção das mídias.
+- Informação obrigatória sobre **desmontagem, escadas e transporte recomendado**.
+- Medidas, peso, cuidados com a retirada e região aproximada são opcionais.
 
-- Demonstração de interesse;
-- Conversas relacionadas aos anúncios;
-- Propostas de negociação;
-- Reserva de itens;
-- Conclusão como doação, troca ou venda;
-- Checkout de pagamento via Stripe;
-- Avaliações entre participantes.
+### Da oferta ao recebimento
 
-### Mapa e impacto
+1. O interessado envia uma oferta e o anunciante aceita, reservando o item.
+2. Uma pessoa propõe local, data e horário; a outra aceita o acordo.
+3. Nas vendas, o comprador pode iniciar o pagamento após o aceite do acordo.
+4. Os participantes acompanham a entrega ou retirada e comunicam imprevistos.
+5. O destinatário confirma o recebimento, concluindo a negociação.
 
-- Mapa com Leaflet e OpenStreetMap;
-- Pontos de coleta cadastrados;
-- Sugestão de novos pontos pela comunidade;
-- Busca de pontos próximos;
-- Cálculo de rotas;
-- Indicadores de itens reutilizados, doações, trocas e beneficiários.
+O painel **Minhas negociações** reúne ofertas enviadas e recebidas, filtros por
+etapa e destaque para as ações que dependem do usuário. Os endereços combinados
+ficam restritos aos participantes.
 
-### Administração
+<details>
+<summary><strong>Regras de campanhas, alertas e negociações</strong></summary>
 
-- Dashboard administrativo;
-- Consulta e suspensão de usuários;
-- Moderação de anúncios e denúncias;
-- Gerenciamento de pontos de coleta;
-- Aprovação ou rejeição de sugestões da comunidade.
+- **Campanhas:** possuem material, beneficiário, meta, cidade e prazo. Apenas
+  contribuições com recebimento confirmado entram na meta. Campanhas encerradas,
+  vencidas ou com meta atingida deixam de receber novas ofertas.
+- **Pedidos da comunidade:** um usuário informa o que precisa; outro oferece um
+  anúncio próprio disponível para doação. O atendimento segue o fluxo de acordo
+  e recebimento, sem concluir a doação automaticamente.
+- **Alertas:** até 20 buscas por usuário, com palavra, cidade/bairro e categoria.
+  A verificação ocorre ao iniciar e a cada minuto, sem repetir o aviso de um mesmo
+  anúncio para o mesmo alerta. As notificações são internas ao aplicativo.
+- **Proximidade:** utiliza a região aproximada de anúncios cadastrados e permite
+  busca em raios de 2 a 100 km, mediante autorização de localização do usuário.
+- **Cancelar aceite:** permitido ao anunciante antes de qualquer proposta de
+  entrega ou registro de pagamento. O anúncio é liberado e o comprador é avisado.
+- **Acordo:** ninguém aceita a própria proposta. O agendamento deve ficar entre
+  30 minutos e 90 dias no futuro; acordos vencidos não liberam novos pagamentos.
+- **Lembretes:** entregas aceitas e ativas geram avisos internos nas janelas de
+  24 horas e 1 hora antes do encontro, com controle para evitar duplicidade.
+- **Imprevistos:** atrasos, ausências e problemas com o local ficam registrados
+  no acordo e são comunicados à outra pessoa.
+- **Problemas de negociação:** relatos de não recebimento, item diferente ou
+  outras ocorrências são encaminhados à moderação com o contexto da negociação.
 
-## Arquitetura
+Um ponto de coleta é um local proposto para encontro; sua disponibilidade precisa
+ser confirmada pelos participantes. O ReUsa+ não contrata transporte nem mantém
+custódia dos valores. O acompanhamento registra etapas, sem rastreamento de
+entregadores por GPS ou reembolso automático por não recebimento.
 
-O frontend e o backend ficam no mesmo repositório. Em produção, o serviço
-`core` compila e serve a interface React e também expõe a API Express.
-
-```text
-Usuário
-  │
-  ▼
-React / React Router / Zustand
-  │
-  ▼
-src/services/api.js
-  │
-  ▼
-API própria: /api/*
-  │
-  ├──► SQLite local ou PostgreSQL
-  ├──► Outbox de eventos
-  ├──► Integrações externas
-  └──► RabbitMQ
-          ├──► services/notification-service.js
-          └──► services/impact-service.js
-```
-
-O arquivo central do backend é [`backend.js`](backend.js). A comunicação
-HTTP do frontend é centralizada em [`src/services/api.js`](src/services/api.js)
-e o estado global é mantido em [`src/state/store.js`](src/state/store.js).
+</details>
 
 ## Tecnologias
 
 | Camada | Tecnologias |
 | --- | --- |
-| Interface | React 18, JSX, React Router, Zustand, Vite |
-| Mapas | Leaflet, React Leaflet, OpenStreetMap |
-| Backend | Node.js 22 LTS, Express |
-| Autenticação | JWT, `scrypt`, OAuth 2.0 do Google (opcional) |
-| Uploads | Multer, armazenamento local ou compatível com S3 |
-| Banco local | SQLite via SQL.js |
-| Banco de produção | PostgreSQL |
-| Mensageria | RabbitMQ via AMQP |
-| Cache/infraestrutura | Redis |
-| Observabilidade | Endpoint de métricas em `/metrics` |
-| Deploy | Railway ou Docker Compose |
+| **Interface** | React 18, React Router, Zustand, Vite, JavaScript, HTML e CSS |
+| **Backend** | Node.js 22, Express, APIs REST, HTTP e JSON |
+| **Autenticação** | JWT, senhas com `scrypt` e Google OAuth 2.0 |
+| **E-mails** | Nodemailer e SMTP |
+| **Persistência** | PostgreSQL em produção; SQLite via SQL.js em ambiente local e testes |
+| **Eventos** | RabbitMQ, AMQP e Transactional Outbox |
+| **Controle de requisições** | Redis para limites compartilhados entre instâncias |
+| **Mídias** | Multer, Cloudflare R2 e SDK compatível com Amazon S3 |
+| **Pagamentos** | Stripe Checkout, Stripe Connect Accounts v2 e SDK oficial |
+| **Mapas** | Leaflet, React Leaflet, OpenStreetMap, Nominatim, Overpass e OSRM |
+| **Entrega e versionamento** | Docker, Docker Compose, Railway, Git, GitHub e GitHub Actions |
 
-## Estrutura do projeto
+## Arquitetura
 
-```text
-.
-├── backend.js                  # API Express e servidor principal
-├── package.json                # Dependências e scripts
-├── Dockerfile                  # Imagem de produção
-├── docker-compose.yml          # Ambiente completo
-├── railway.toml                # Configuração de deploy na Railway
-├── index.html                  # Entrada do frontend
-├── src/
-│   ├── main.jsx                # Montagem do React
-│   ├── App.jsx                 # Entrada da aplicação
-│   ├── routes.jsx              # Telas e navegação
-│   ├── services/api.js         # Cliente da API própria
-│   ├── state/store.js          # Estado global com Zustand
-│   ├── data/                   # Dados de fallback
-│   └── assets/                 # Imagens da interface
-├── storage/
-│   ├── postgres-api.js         # Rotas no modo PostgreSQL
-│   ├── postgres-repository.js  # Acesso ao PostgreSQL
-│   ├── postgres-domains.js     # Repositórios de domínio
-│   └── location-validation.js  # Validações de localização
-├── distributed/
-│   ├── event-publisher.js      # Publicação na outbox/RabbitMQ
-│   ├── object-storage.js       # Integração compatível com S3
-│   ├── redis-client.js         # Cliente Redis
-│   └── observability.js        # Métricas HTTP
-├── services/
-│   ├── notification-service.js # Consumidor de notificações
-│   ├── impact-service.js       # Consumidor de impacto
-│   └── persistence.js          # Persistência dos serviços
-├── migrations/                 # Migrações e índices SQL
-├── scripts/                    # Migração e verificação do banco
-└── test/                       # Testes automatizados
+```mermaid
+flowchart TB
+    WEB["Interface web"] -->|"API REST"| BACK["Backend"]
+    BACK --> DB[("Banco de dados")]
+    BACK --> ARQUIVOS["Armazenamento de arquivos"]
+    BACK --> GOOGLE["API Google"]
+    BACK <-->|"Pagamentos e webhooks"| STRIPE["API de pagamentos"]
+    BACK --> CNPJ["API de CNPJ"]
+    BACK --> EMAIL["Serviço de e-mail"]
+    WEB --> CEP["API de CEP"]
+    WEB --> MAPAS["Serviços de mapas"]
+    BACK --> MAPAS
+    BACK --> REDIS["Controle de requisições"]
+    BACK -->|"Eventos via outbox"| FILA["Fila de mensagens"]
+    FILA --> NOTIFICACOES["Serviço de notificações"]
+    FILA --> IMPACTO["Serviço de impacto"]
 ```
 
-## Pré-requisitos
+O frontend e a API ficam no mesmo repositório. A aplicação principal serve a
+interface compilada e expõe as rotas `/api/*`. No modo PostgreSQL, o banco é a
+fonte de verdade dos dados em execução.
 
-Para a execução básica:
+Na configuração distribuída, os eventos são registrados na mesma transação da
+operação de negócio, publicados no RabbitMQ e processados pelos serviços de
+notificações e impacto. O fluxo utiliza confirmação de publicação, retentativas
+e processamento idempotente, com entrega **pelo menos uma vez** e consistência
+eventual dos resultados derivados.
 
-- [Node.js](https://nodejs.org/) 22 LTS;
-- npm, incluído no Node.js;
-- Git.
+Redis, RabbitMQ e os serviços separados dependem da configuração do ambiente.
+O [Docker Compose](docker-compose.yml) define **6 serviços**: aplicação principal,
+PostgreSQL, Redis, RabbitMQ, notificações e impacto.
 
-Docker Desktop é opcional e necessário apenas para executar a infraestrutura
-completa.
+<details>
+<summary><strong>Integrações externas e responsabilidades</strong></summary>
+
+| Integração | Responsabilidade | Quem consulta |
+| --- | --- | --- |
+| Google OAuth | Login social | Backend, com redirecionamento do navegador |
+| Stripe | Cadastro de vendedores, Checkout e eventos financeiros | Backend |
+| Cloudflare R2 | Armazenamento de fotos e vídeos | Backend para uploads; navegador para exibição pública |
+| ViaCEP | Preenchimento de endereços por CEP | Frontend |
+| BrasilAPI | Consulta de empresas por CNPJ | Backend |
+| OpenStreetMap | Exibição do mapa | Frontend |
+| Nominatim | Busca de endereços e coordenadas | Frontend e backend |
+| Overpass | Consulta de pontos públicos de coleta | Backend |
+| OSRM | Cálculo de rotas | Backend |
+| SMTP | Confirmação de e-mail e recuperação de senha | Backend |
+
+As notificações do navegador exigem permissão e a aplicação aberta. Lembretes e
+alertas de itens são avisos internos; não há envio desses lembretes por SMS ou
+e-mail. Google Fonts fornece as fontes e os ícones da interface.
+
+</details>
 
 ## Executar localmente
 
-### Instalação e produção local
+**Pré-requisitos:** Node.js **22**, npm e Git. Docker é necessário apenas para
+os modos de execução em contêineres.
 
 ```bash
 git clone https://github.com/MarcusVinicius-BCC/Reusa-.git
 cd Reusa-
-npm install
+npm ci
 npm run build
 npm start
 ```
 
-Abra:
+Acesse [http://localhost:3000](http://localhost:3000).
 
-- Interface e API: <http://localhost:3000>
-- Health check: <http://localhost:3000/api/health>
+Sem configuração de PostgreSQL e fora de `NODE_ENV=production`, a aplicação usa
+SQLite em `data/reusa.sqlite` e armazenamento local. As integrações externas
+precisam de suas respectivas configurações. O arquivo [.env.example](.env.example)
+documenta as variáveis disponíveis; preencha apenas as que utilizar.
 
-### Desenvolvimento com atualização automática
+### Desenvolvimento
 
-Em dois terminais:
+Execute em dois terminais:
 
 ```bash
-# Terminal 1: backend Node.js
+# Terminal 1: backend
 npm run dev
 ```
 
 ```bash
-# Terminal 2: frontend Vite
+# Terminal 2: frontend
 npm run dev:ui
 ```
 
-Abra <http://localhost:5173>. O Vite encaminha `/api` para
-`http://localhost:3000`.
+Acesse [http://localhost:5173](http://localhost:5173). O Vite encaminha as chamadas
+de `/api` para o backend na porta `3000`.
 
-Na primeira execução, o sistema cria o banco local em `data/reusa.sqlite`.
+### Docker Compose
 
-## Configuração
+```bash
+docker compose up --build
+```
 
-O sistema funciona sem arquivo `.env` na configuração mínima. Para produção,
-defina as variáveis diretamente no ambiente de execução. Nunca publique
-segredos no Git.
+O ambiente completo utiliza PostgreSQL e inicia os seis serviços definidos no
+[docker-compose.yml](docker-compose.yml). A interface fica disponível na porta
+`3000`; notificações e impacto usam as portas internas `3001` e `3002`.
 
-### Variáveis principais
+Antes de uma implantação, configure os segredos de sessão, banco, broker e
+comunicação interna. Para integrações como Google, SMTP e R2, as variáveis também
+precisam ser encaminhadas ao serviço `core` no Compose; o arquivo `.env` sozinho
+não adiciona variáveis que não estão declaradas no YAML.
 
-| Variável | Quando usar | Finalidade |
+Para encerrar, preservando os volumes:
+
+```bash
+docker compose down
+```
+
+<details>
+<summary><strong>Avaliação local em um contêiner e exportação da imagem</strong></summary>
+
+Para avaliar a aplicação com SQLite e armazenamento local, sem definir
+`NODE_ENV=production`:
+
+```bash
+docker build -t reusa-plus .
+docker run --rm -p 3000:3000 \
+  -e JWT_SECRET=chave-local-de-avaliacao \
+  -v reusa-plus-data:/app/data reusa-plus
+```
+
+Esse modo permite avaliar os recursos locais. Pagamentos, login Google, e-mails
+e serviços distribuídos exigem configuração adicional.
+
+Para exportar e importar a imagem:
+
+```bash
+docker save reusa-plus -o reusa-plus.tar
+docker load -i reusa-plus.tar
+```
+
+A exportação contém a imagem da aplicação. Os volumes do banco e as mídias do
+R2 são dados separados, assim como as credenciais dos serviços externos.
+
+</details>
+
+## Configuração e produção
+
+Em produção, configure **PostgreSQL**, um `JWT_SECRET` estável e as integrações
+utilizadas. `NODE_ENV=production` exige `DATABASE_PROVIDER=postgres` e uma conexão
+válida em `POSTGRES_URL` ou `DATABASE_URL`. As migrações são aplicadas ao iniciar.
+
+<details>
+<summary><strong>Variáveis de ambiente</strong></summary>
+
+| Grupo | Variáveis | Uso |
 | --- | --- | --- |
-| `PORT` | Opcional | Porta HTTP; padrão `3000`. |
-| `JWT_SECRET` | Produção | Segredo longo e aleatório para assinar sessões. |
-| `DATA_DIR` | Opcional | Diretório do SQLite e dos uploads; padrão `./data`. |
-| `DATABASE_PROVIDER` | PostgreSQL | Use `postgres` para ativar PostgreSQL. |
-| `DATABASE_URL` ou `POSTGRES_URL` | PostgreSQL | String de conexão do banco. |
-| `APP_BASE_URL` | Produção | URL pública da aplicação. |
-| `ADMIN_EMAILS` | Opcional | E-mails administrativos separados por vírgula. |
-| `GOOGLE_CLIENT_ID` | Login Google | Client ID OAuth. |
-| `GOOGLE_CLIENT_SECRET` | Login Google | Segredo OAuth; não versionar. |
-| `GOOGLE_REDIRECT_URI` | Login Google | Callback `/api/auth/google/callback`. |
-| `SMTP_HOST` | E-mail | Servidor SMTP do provedor, por exemplo `smtp.gmail.com`. |
-| `SMTP_PORT` | E-mail | Porta SMTP segura, normalmente `587`. |
-| `SMTP_USER` | E-mail | Conta de e-mail usada para enviar mensagens. |
-| `SMTP_PASSWORD` | E-mail | Senha de aplicativo da conta SMTP. |
-| `EMAIL_FROM` | E-mail | Remetente das mensagens de confirmação. |
-| `REDIS_URL` | Opcional | Conexão Redis. |
-| `AMQP_URL` | Opcional | Conexão RabbitMQ. |
-| `EVENT_EXCHANGE` | Opcional | Exchange de eventos; padrão `reusa.events`. |
-| `SERVICE_AUTH_TOKEN` | Serviços | Autenticação entre serviços internos. |
-| `NOTIFICATION_SERVICE_URL` | Distribuído | URL do serviço de notificações. |
-| `IMPACT_SERVICE_URL` | Distribuído | URL do serviço de impacto. |
-| `S3_*` | Upload externo | Configuração do armazenamento compatível com S3. |
+| Aplicação | `PORT`, `APP_BASE_URL`, `DATA_DIR` | Porta, domínio público e diretório de dados locais. |
+| Sessão e administração | `JWT_SECRET`, `ADMIN_EMAILS` | Assinatura dos tokens e definição de administradores. |
+| PostgreSQL | `DATABASE_PROVIDER`, `POSTGRES_URL` ou `DATABASE_URL` | Persistência de produção. |
+| Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | Login pelo Google. |
+| E-mail | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `EMAIL_FROM` | Verificação de conta e recuperação de senha. |
+| Redis | `REDIS_URL` | Controle compartilhado de requisições. |
+| RabbitMQ | `AMQP_URL`, `EVENT_EXCHANGE` | Publicação e consumo de eventos. |
+| Serviços internos | `SERVICE_AUTH_TOKEN`, `NOTIFICATION_SERVICE_URL`, `IMPACT_SERVICE_URL` | Comunicação com notificações e impacto. |
+| Armazenamento | `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_PUBLIC_BASE_URL`, `S3_REGION` | Fotos e vídeos no R2 ou em serviço compatível com S3. |
+| Rotas | `ROUTING_BASE_URL` | Endereço do serviço OSRM. |
+| Pagamentos | `STRIPE_*` | Segredos, ambientes, Connect, webhooks e habilitação dos meios de pagamento. |
 
-> `S3_PUBLIC_BASE_URL` deve ser a URL pública que já aponta para o bucket,
-> por exemplo `https://pub-xxxx.r2.dev` ou um domínio personalizado. As
-> imagens serão acessadas como `/uploads/<arquivo>`.
+No R2, `S3_PUBLIC_BASE_URL` deve apontar para o domínio público do bucket, como
+`https://pub-xxxx.r2.dev`, e `S3_REGION` pode usar `auto`. A disponibilidade pública
+dos objetos é configurada na Cloudflare; o app não aplica bucket policy ao R2.
+Sem armazenamento externo, os uploads locais precisam de um volume persistente.
 
-> Em produção, defina obrigatoriamente `JWT_SECRET`. Para preservar uploads
-> locais na Railway, use um Volume montado em `/data` e `DATA_DIR=/data`.
-
-## Comandos
-
-| Comando | O que faz |
-| --- | --- |
-| `npm start` | Inicia o backend principal. |
-| `npm run dev` | Inicia o backend com `node --watch`. |
-| `npm run dev:ui` | Inicia o servidor Vite. |
-| `npm run build` | Gera o frontend em `dist/`. |
-| `npm test` | Executa os testes Node.js. |
-| `npm run migrate:postgres:schema` | Aplica as migrações PostgreSQL. |
-| `npm run migrate:postgres` | Migra dados do SQLite para PostgreSQL. |
-| `npm run verify:postgres` | Verifica a migração PostgreSQL. |
-
-## Banco de dados
-
-### SQLite
-
-É o modo padrão local. O arquivo principal é:
+Para login Google no domínio publicado, cadastre o callback:
 
 ```text
-data/reusa.sqlite
+https://reusa.up.railway.app/api/auth/google/callback
 ```
 
-O banco é carregado pelo SQL.js e persistido em arquivo. Diretórios
-`data-debug`, `data-run` e `data-local-*` podem existir como ambientes
-temporários de desenvolvimento ou testes.
+Defina `APP_BASE_URL=https://reusa.up.railway.app`. Credenciais ficam nas variáveis
+do ambiente; [.env.example](.env.example) contém somente exemplos de configuração.
 
-### PostgreSQL
+</details>
 
-Ative com:
+### Pagamentos e vendedores
 
-```env
-DATABASE_PROVIDER=postgres
-POSTGRES_URL=postgres://usuario:senha@localhost:5432/reusa
-JWT_SECRET=troque-por-um-segredo-longo-e-aleatorio
-```
+A integração ativa utiliza **Stripe Checkout e Stripe Connect Accounts v2**.
+Nos novos cadastros, os vendedores brasileiros concluem o onboarding hospedado
+pela Stripe e usam o painel completo. Fora da demonstração, as cobranças são
+criadas diretamente na conta conectada do vendedor.
 
-As migrações ficam em [`migrations/`](migrations/) e são aplicadas pelo
-script [`scripts/run-postgres-migrations.js`](scripts/run-postgres-migrations.js).
+O backend valida a conta, o valor e o acordo antes do pagamento, verifica a
+assinatura dos webhooks e faz conciliação periódica. A integração inclui
+idempotência, recuperação de respostas perdidas, reembolsos e acompanhamento
+de contestações.
 
-As entidades principais incluem:
+**Pix e pagamentos reais dependem de habilitação na Stripe e de configuração
+explícita no sistema.** Teste e produção mantêm vínculos separados. Uma conta
+criada ou um Checkout aberto não equivalem a cadastro aprovado ou pagamento
+confirmado.
 
-`users`, `posts`, `post_images`, `post_videos`, `threads`, `messages`, `negotiations`,
-`negotiation_proposals`, `payments`, `reviews`, `comments`, `favorites`,
-`notifications`, `reports`, `collection_points` e `event_outbox`.
+- [Guia de testes e cadastro de vendedores](docs/stripe-testing.md)
+- [Guia de produção, credenciais e webhooks](docs/stripe-production.md)
 
-## Serviços distribuídos
+O guia de produção descreve os **três destinos de eventos**: dois de pagamentos
+com conteúdo snapshot e um de contas Accounts v2 com conteúdo thin.
 
-O fluxo de eventos usa uma outbox transacional:
+### Railway
 
-```text
-Operação concluída
-  ↓
-event_outbox
-  ↓
-RabbitMQ / reusa.events
-  ├── negotiation.*
-  ├── message.sent
-  └── review.created
-       ↓
-notification-service
-impact-service
-```
+O [railway.toml](railway.toml) configura build com `npm run build`, inicialização
+com `npm start` e health check em `/api/health`.
 
-Os eventos são processados com entrega **at-least-once**, permitindo retentativa
-quando o broker está indisponível.
+Para implantar, conecte o repositório à Railway, adicione PostgreSQL e configure
+as variáveis de produção e o domínio público. Serviços de notificações, impacto,
+Redis e RabbitMQ precisam ser implantados/configurados quando utilizados; o
+Docker Compose não é aplicado automaticamente pela Railway.
 
-Serviços internos:
-
-| Serviço | Porta padrão | Arquivo |
-| --- | ---: | --- |
-| Core | 3000 | [`backend.js`](backend.js) |
-| Notificações | 3001 | [`services/notification-service.js`](services/notification-service.js) |
-| Impacto | 3002 | [`services/impact-service.js`](services/impact-service.js) |
-
-## APIs externas
-
-Estas integrações não pertencem ao domínio principal do ReUsa+; são chamadas
-pelo backend quando a funcionalidade correspondente é utilizada.
-
-| Serviço externo | Uso |
-| --- | --- |
-| Google OAuth | Login social |
-| BrasilAPI | Consulta de empresas por CNPJ |
-| Gmail SMTP | Envio de confirmação de e-mail |
-| Nominatim | Geocodificação de endereços |
-| Overpass API | Busca de pontos públicos no OpenStreetMap |
-| OSRM | Cálculo de rotas |
-| OpenStreetMap | Tiles e dados visuais do mapa |
-| Google Fonts | Fontes e ícones da interface |
-
-As rotas `/api/*` são a API própria do ReUsa+. O frontend não precisa chamar
-diretamente APIs externas que exigem segredo.
-
-## API própria
-
-### Saúde e operação
-
-```text
-GET /api/health
-GET /api/health/live
-GET /api/health/ready
-GET /api/distributed/status
-GET /api/distributed/overview
-GET /metrics
-```
-
-### Autenticação
-
-```text
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
-GET  /api/auth/verify-email
-POST /api/auth/resend-verification
-GET  /api/auth/google
-GET  /api/auth/google/callback
-```
-
-### Publicações e interação
-
-```text
-GET    /api/feed
-GET    /api/posts/:id
-POST   /api/posts
-PUT    /api/posts/:id
-DELETE /api/posts/:id
-PATCH  /api/posts/:id/status
-POST   /api/posts/:id/like
-POST   /api/posts/:id/favorite
-GET    /api/posts/:id/comments
-POST   /api/posts/:id/comments
-```
-
-### Negociação, mensagens e perfil
-
-```text
-GET|POST|PATCH /api/negotiations/*
-GET|POST|DELETE /api/messages/threads/*
-GET|POST       /api/notifications/*
-GET|PUT|DELETE /api/profile/*
-GET             /api/impact/community
-```
-
-### Mapa e administração
-
-```text
-GET|POST /api/collection-points/*
-GET      /api/map-route
-GET      /api/businesses/cnpj/:cnpj
-GET|POST|PATCH|DELETE /api/admin/*
-```
-
-Rotas protegidas exigem `Authorization: Bearer <token>`. Rotas administrativas
-exigem, além do token, um usuário com `role=admin`.
-
-## Pagamentos com Stripe Checkout e Stripe Connect
-
-Os novos pagamentos utilizam Stripe Checkout hospedado e contas Connect Accounts v2 brasileiras, com gerenciamento de risco pela Stripe e painel completo. O vendedor cadastra dados e conta bancária pela Stripe; o ReUsa+ consulta a habilitação de cobranças e repasses antes de liberar vendas. Cada cobrança é criada diretamente na conta do vendedor, após o aceite da oferta e do acordo de entrega.
-
-A integração inclui verificação de assinatura pelo SDK oficial, registro persistente de tentativas e eventos, idempotência, conciliação periódica, recuperação de respostas perdidas, reembolso integral pelo vendedor e acompanhamento de reembolsos parciais/contestações. Pix inicia desabilitado e depende da habilitação efetiva pela Stripe.
-
-Veja **[configuração completa de produção, vendedores e webhooks](docs/stripe-production.md)**. O documento contém as variáveis exatas do Railway, os dois destinos de eventos e os procedimentos de validação e suporte.
-
-Veja também o [cadastro de vendedores e pagamentos em teste](docs/stripe-testing.md), sem ativação da conta de produção.
-
-Para demonstração sem dinheiro real, use uma chave `sk_test_` ou `rk_test_`, `STRIPE_DEMO_MODE=true`, `STRIPE_ENABLE_LIVE=false`, `STRIPE_CONNECT_ENABLED=false` e o webhook do ambiente de teste. Para testar vendedores em sandbox, mantenha a chave `sk_test_` ou `rk_test_`, desligue demonstração e habilite Connect no ambiente de teste. Em produção, use `sk_live_` ou `rk_live_` com `STRIPE_ENABLE_LIVE=true`. Nenhuma chave secreta deve ir ao frontend, Git ou chat.
-
-## Testes e validação
-
-Execute:
+## Testes e comandos
 
 ```bash
 npm test
 npm run build
 ```
 
-Os testes usam diretórios temporários e não devem alterar o banco local de
-desenvolvimento. O health check pode ser verificado com:
+Os testes cobrem autenticação, anúncios e mídias, permissões, campanhas, alertas,
+mensagens, ofertas, entrega, armazenamento e pagamentos. Os testes financeiros
+simulam respostas da Stripe; a validação real do provedor depende do ambiente
+e das contas autorizadas.
+
+O [GitHub Actions](.github/workflows/stripe-checks.yml) executa instalação,
+auditoria de dependências, testes, integração PostgreSQL e build do frontend.
+
+| Comando | Finalidade |
+| --- | --- |
+| `npm start` | Inicia a aplicação principal. |
+| `npm run dev` | Executa o backend com recarga. |
+| `npm run dev:ui` | Inicia o Vite. |
+| `npm run build` | Gera a interface em `dist/`. |
+| `npm test` | Executa a suíte de testes. |
+| `npm run migrate:postgres:schema` | Aplica manualmente as migrações PostgreSQL. |
+| `npm run migrate:postgres` | Migra dados do SQLite para PostgreSQL. |
+| `npm run verify:postgres` | Verifica a migração dos dados. |
+
+<details>
+<summary><strong>Integração PostgreSQL e diagnóstico</strong></summary>
+
+Use um banco de testes isolado para executar as integrações:
 
 ```bash
-curl http://localhost:3000/api/health
+NODE_ENV=test DATABASE_PROVIDER=postgres \
+  POSTGRES_URL=postgres://usuario:senha@localhost:5432/reusa_test \
+  node --test test/postgres.integration.test.js
+
+STRIPE_TEST_POSTGRES_URL=postgres://usuario:senha@localhost:5432/reusa_test \
+  node --test test/stripe-workflow.test.js
 ```
 
-Resposta esperada:
-
-```json
-{
-  "ok": true
-}
-```
-
-## Entrega em um único contêiner
-
-A imagem padrão funciona sem PostgreSQL, Redis, RabbitMQ ou credenciais de
-serviços externos. Ela usa SQLite e armazenamento local para permitir que a
-avaliação comece imediatamente. O Cloudflare R2 e o PostgreSQL continuam
-disponíveis quando suas variáveis são fornecidas no ambiente.
-
-Para criar e executar:
-
-```bash
-docker build -t reusa-plus .
-docker run --rm -p 3000:3000 -e JWT_SECRET=chave-local-de-avaliacao reusa-plus
-```
-
-Abra <http://localhost:3000> e valide <http://localhost:3000/api/health>.
-Para manter o SQLite e os uploads entre execuções, use um volume:
-
-```bash
-docker run --rm -p 3000:3000 -e JWT_SECRET=chave-local-de-avaliacao \
-  -v reusa-plus-data:/app/data reusa-plus
-```
-
-Para exportar uma imagem para envio pelo SIGAA:
-
-```bash
-docker save reusa-plus -o reusa-plus.tar
-```
-
-No computador do professor:
-
-```bash
-docker load -i reusa-plus.tar
-docker run --rm -p 3000:3000 -e JWT_SECRET=chave-local-de-avaliacao reusa-plus
-```
-
-Não inclua chaves do Cloudflare, PostgreSQL ou outros serviços na imagem.
-
-## Ambiente completo com Docker Compose
-
-O ambiente completo sobe PostgreSQL, RabbitMQ, Redis, core, notificações e
-impacto:
-
-```bash
-docker compose up --build
-```
-
-Abra <http://localhost:3000>.
-
-Para encerrar:
-
-```bash
-docker compose down
-```
-
-Os dados persistentes ficam nos volumes Docker declarados em
-[`docker-compose.yml`](docker-compose.yml).
-
-## Deploy na Railway
-
-O arquivo [`railway.toml`](railway.toml) já define:
-
-- Build: `npm run build`;
-- Inicialização: `npm start`;
-- Health check: `/api/health`;
-- Reinício em caso de falha.
-
-Passos:
-
-1. Crie um projeto na [Railway](https://railway.app/);
-2. Escolha **Deploy from GitHub Repo**;
-3. Selecione o repositório;
-4. Adicione PostgreSQL;
-5. Configure `DATABASE_PROVIDER=postgres`;
-6. Configure `DATABASE_URL`;
-7. Configure um `JWT_SECRET` forte;
-8. Gere um domínio público;
-9. Teste `https://seu-dominio/api/health`.
-
-Para login Google, cadastre no Google Cloud:
-
-```text
-https://seu-dominio/api/auth/google/callback
-```
-
-Depois configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
-`GOOGLE_REDIRECT_URI` e `APP_BASE_URL`.
-
-## Segurança
-
-O projeto inclui:
-
-- JWT para sessões;
-- Senhas protegidas com `scrypt`;
-- Confirmação de e-mail;
-- Limitação de tentativas em rotas sensíveis;
-- Validação de upload e limite de tamanho;
-- Validação de CNPJ, coordenadas e endereços;
-- Controle de acesso administrativo;
-- Cabeçalhos de segurança HTTP;
-- Token para comunicação entre serviços;
-- Identificador de correlação por requisição.
-
-Nunca versione:
-
-```text
-.env
-node_modules/
-dist/
-data/
-uploads/
-data-local-*/
-```
-
-## Licença e uso
-
-Este projeto está identificado no `package.json` como privado e foi organizado
-para uso acadêmico e de demonstração. Antes de uma operação comercial, revise
-licenciamento, privacidade, retenção de dados, e-mails, armazenamento de
-imagens e pagamentos reais.
-
-## Campanhas da comunidade
-
-No início do feed, usuários autenticados podem criar pedidos de materiais com
-beneficiário, objetivo, meta em unidades, cidade, prazo e instruções de entrega.
-Cada campanha solicita um tipo de material; para materiais diferentes, crie
-campanhas separadas. Visitantes podem consultar as campanhas.
-
-Outros usuários oferecem uma quantidade e uma mensagem privada de entrega.
-O organizador consulta as contribuições, responde em particular para combinar
-local e horário e confirma o recebimento. Somente itens efetivamente recebidos
-entram na meta; ofertas pendentes são exibidas separadamente. O doador ou
-organizador pode cancelar uma oferta pendente. Contribuições finalizadas não
-podem ser alteradas, e repetir uma confirmação não soma a quantidade novamente.
-
-O organizador pode encerrar a campanha e ainda confirmar entregas combinadas.
-Prazo vencido, encerramento ou meta atingida impedem novas ofertas. Campanhas abertas aparecem junto às publicações do feed. O ícone de campanha no
-cabeçalho abre a tela `/nova-campanha`, com cabeçalho e botão de voltar; não há painel fixo quando não existem
-campanhas abertas. A busca do feed também pesquisa título, material, beneficiário
-e cidade. Não há selo de verificação de
-instituições nem integração de contribuições com anúncios nesta versão.
-
-As tabelas `campaigns` e `campaign_contributions` são criadas automaticamente
-no SQLite e pela migração `012_community_campaigns.sql` no PostgreSQL. Alterações
-e eventos `campaign.*` são gravados na mesma transação da outbox. As notificações
-de oferta, resposta e recebimento são locais e não dependem de RabbitMQ.
-As mensagens de entrega e respostas não aparecem na listagem pública.
-
-Validação: `npm run build` e `npm test`. O teste de integração PostgreSQL também
-exercita campanhas quando `DATABASE_PROVIDER=postgres` e a conexão estão
-configurados; esse teste precisa de um banco de testes isolado.
-
-## Acordo de entrega e confirmação de recebimento
-
-A reserva e a aceitação de uma oferta **não liberam mais o pagamento sozinhas**.
-O fluxo de venda é:
-
-1. O anunciante aceita a oferta e reserva o item.
-2. Uma das pessoas propõe endereço (ou ponto de encontro), data e horário.
-3. A outra pessoa aceita explicitamente os detalhes. Ninguém aceita a própria proposta.
-4. O comprador pode iniciar o pagamento pelo valor e método da oferta aceita.
-5. O anunciante pode informar saída para entrega após aprovação do pagamento.
-6. Apenas o comprador confirma que recebeu e conferiu o item. Isso conclui
-   a negociação, marca o anúncio como vendido e libera avaliações.
-
-Doações e trocas usam o mesmo acordo e confirmação pelo destinatário, sem
-pagamento. Em trocas, essa confirmação representa o aceite da troca pelo
-destinatário; o sistema não oferece transporte nem custódia dos objetos.
-
-Antes do pagamento, qualquer participante pode cancelar a proposta de entrega e
-propor outra. Um novo local ou horário exige novo aceite. Durante pagamento em
-processamento ou aprovado, ficam bloqueadas mudanças da entrega, preço, reserva,
-edição e exclusão do anúncio. Pagamentos recusados ou estornados pelo provedor
-liberam o bloqueio financeiro. O servidor também impede pagamentos duplicados
-com novas chaves enquanto já há pagamento em andamento ou aprovado.
-
-Os horários são enviados ao servidor em ISO UTC e exibidos no acompanhamento
-em horário de Brasília. O agendamento deve ficar entre 30 minutos e 90 dias no
-futuro; acordos com prazo vencido não liberam novos pagamentos. A confirmação
-de recebimento pode registrar uma entrega efetivamente feita com atraso.
-
-Um ponto de coleta é apenas um local proposto para encontro: é necessário
-confirmar previamente sua disponibilidade. Não há integração para reservar
-espaço, armazenar produtos ou contratar um entregador. O endereço é privado aos
-participantes da negociação.
-
-O QR Code antigo de coleta foi retirado: os dois participantes podiam acessá-lo,
-e sua posse não comprovava recebimento. A migração `013_delivery_agreement.sql`
-adiciona os autores/horários de proposta, aceite e recebimento e invalida agendas
-legadas sem aceite registrado; os participantes devem combinar novamente.
-Pagamentos antigos já aprovados não são cobrados outra vez: podem receber um
-acordo de entrega para regularizar o recebimento. Links de checkout já emitidos
-externamente antes dessa mudança não são revogados pela migração.
-
-**Limite financeiro:** o pagamento pela Stripe não é uma reserva de valor
-administrada pelo ReUsa+. Esta implementação não cria escrow nem reembolso
-automático por não recebimento. Não confirme recebimento sem estar com o item;
-resolva imprevistos pelo chat e, quando necessário, pelo suporte do provedor.
-O app não promete garantia de entrega física.
-
-Endpoints de logística:
-
-```text
-GET|POST /api/negotiations/:id/collection
-POST     /api/collection-deliveries/:id/accept
-POST     /api/collection-deliveries/:id/confirm
-PATCH    /api/collection-deliveries/:id/status
-```
-
-Propostas, aceite e recebimento geram registros na outbox e notificações. A antiga
-conclusão unilateral por `POST /api/posts/:id/complete` é bloqueada; o recebimento
-confirmado pelo destinatário é a fonte da conclusão.
-
-
-## Versão do Node e armazenamento Cloudflare R2
-
-O projeto usa Node.js **22 LTS**, indicado em `package.json`, `.nvmrc` e
-`Dockerfile`. No Railway/Railpack, `engines.node` seleciona a versão. Se o serviço
-já tiver `RAILPACK_NODE_VERSION` definido como 20, ajuste para `22` nas variáveis
-do Railway: uma configuração explícita do ambiente prevalece sobre o repositório.
-Não use `NODE_NO_WARNINGS` para esconder avisos de compatibilidade.
-
-O Cloudflare R2 não suporta a operação S3 `PutBucketPolicy`. O sistema identifica
-endpoints `*.r2.cloudflarestorage.com`, usa região `auto` por padrão e verifica o
-bucket sem tentar aplicar essa política. A mensagem de acesso verificado é
-informativa; falhas reais de credenciais, permissões ou upload continuam sendo
-erros. Outros provedores compatíveis com políticas S3 mantêm esse comportamento.
-
-Para fotos e vídeos no R2, configure nas variáveis do serviço:
-
-- `S3_ENDPOINT`: endpoint S3 da conta R2.
-- `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`: bucket e credenciais.
-- `S3_PUBLIC_BASE_URL`: domínio público do bucket, como `https://pub-xxxx.r2.dev`
-  ou domínio personalizado. Não use o endpoint autenticado de `S3_ENDPOINT`.
-- `S3_REGION`: opcional; no R2, o padrão é `auto`.
-
-O acesso público precisa estar habilitado na Cloudflare. O app não torna um
-bucket R2 público automaticamente. Valide um upload e abra a imagem em uma
-janela sem autenticação depois do deploy. Os testes locais verificam o SDK e um
-servidor S3 de teste; não validam as permissões do bucket real sem acesso a ele.
-
-### Cancelar o aceite de uma oferta
-
-Na lista de interessados, o anunciante pode usar **Cancelar aceite** enquanto a
-reserva aceita ainda não tiver proposta de entrega nem qualquer registro de
-pagamento. O servidor valida a regra na mesma transação que desfaz a reserva.
-Abrir a tela não conta como avanço; enviar uma proposta de entrega ou iniciar
-um pagamento conta, mesmo que a etapa seja cancelada ou o pagamento falhe depois.
-
-O cancelamento recusa a oferta selecionada, libera o anúncio e avisa o comprador.
-As demais propostas pendentes permanecem disponíveis para escolha; só são
-encerradas quando o recebimento conclui a negociação. Ofertas anteriormente
-recusadas podem ser reconsideradas explicitamente enquanto o anúncio estiver
-disponível, inclusive as recusadas automaticamente por versões antigas.
-
-`POST /api/negotiations/:id/cancel-acceptance` permite essa ação somente ao
-anunciante. A lista de interessados informa `canCancelAcceptance`; a interface
-atualiza a permissão periodicamente e o servidor sempre verifica novamente ao
-clicar. Cancelar o aceite e avançar para entrega simultaneamente não permite
-que as duas operações sejam concluídas.
-
-## Painel de negociações, lembretes e imprevistos
-
-A tela /negociacoes, disponível pelo ícone no cabeçalho do feed e pelo perfil,
-reúne as ofertas enviadas e recebidas, com busca e filtros por resposta, acordo,
-pagamento, entrega/recebimento e encerradas. “Minha vez” destaca ações que
-dependem do usuário. Os botões abrem o anúncio com seu acordo ou a conversa.
-A lista é privada e atualiza a cada 15 segundos e quando a janela ganha foco.
-
-Entregas aceitas e ativas geram lembretes para os dois participantes nas janelas
-de até 24 horas e até 1 hora antes do encontro. O backend verifica a agenda ao
-iniciar e a cada minuto. As notificações são internas ao app, não e-mail/SMS.
-A tabela delivery_reminders impede repetição por usuário, horário e janela,
-inclusive após reinício e em réplicas PostgreSQL. Se o servidor ficar desligado,
-só as janelas ainda futuras são processadas ao voltar; não há envio retroativo
-após o encontro. Entregas pendentes de aceite, canceladas ou concluídas não
-recebem lembretes.
-
-“Informar imprevisto” no acordo permite comunicar atraso, ausência, problema com
-o local ou outra situação. O registro fica visível aos dois participantes e no
-painel, e notifica a outra pessoa. Enviar a mesma mensagem duas vezes em cinco
-minutos não duplica o registro. O aviso não altera o acordo ou libera mudanças
-em pagamentos; os participantes devem combinar uma solução pelo chat.
-A migração 014_negotiation_followup.sql cria o histórico e o controle de lembretes.
-
-## Descoberta de itens e ferramentas da comunidade
-
-- **Alertas (/alertas):** cada usuário pode salvar até 20 buscas por palavra,
-  cidade/bairro e categoria. O backend verifica novos anúncios disponíveis a
-  cada minuto e ao iniciar. As notificações são internas ao app; cada anúncio
-  avisa apenas uma vez por alerta, inclusive após reinício. Itens antigos,
-  próprios, indisponíveis ou de usuários bloqueados não geram avisos.
-- **Proximidade:** o feed permite filtrar a cidade/bairro e, com autorização de
-  geolocalização, escolher raio de 2 a 100 km. O resultado é aproximado e contém
-  apenas anúncios cuja região foi cadastrada. A posição de consulta não é salva.
-- **Transporte:** nova publicação e edição de transporte no detalhe permitem
-  medidas, peso, desmontagem, escadas, veículo e cuidados com retirada.
-  Novos anúncios exigem informar se o item desmonta, se há escadas e o transporte
-  recomendado. Medidas, peso, observações e região aproximada são opcionais.
-  O dono pode alterar enquanto o anúncio estiver disponível. Coordenadas de anúncios
-  são arredondadas a duas casas decimais antes de armazenamento e não são
-  expostas na resposta pública. Informações exatas de entrega ficam no acordo.
-- **Perguntas públicas:** interessados perguntam no detalhe do item; somente
-  o anunciante responde. Perguntas e respostas são públicas; contatos e
-  endereços devem ser combinados no chat. Há notificação de pergunta/resposta.
-- **Pedidos (/pedidos):** uma pessoa publica uma necessidade individual com
-  descrição, cidade e prazo. Outra pode oferecer um anúncio próprio disponível
-  para doação. A oferta abre uma conversa e uma negociação com quem pediu,
-  seguindo reserva, acordo e recebimento existentes; não conclui uma doação
-  automaticamente. O backend marca o pedido como atendido após recebimento
-  confirmado (verificação a cada minuto). Pedidos abertos podem ser encerrados
-  pelo autor. Para metas de várias unidades, use campanhas.
-- **Problemas de negociação:** participantes de negociação reservada ou
-  concluída podem registrar não comparecimento, item diferente, não recebimento
-  ou outro problema. A central administrativa de Denúncias recebe o relato com
-  contexto de entrega/pagamento. Somente administradores alteram seu status.
-  Registrar um problema não cancela acordos nem estorna valores automaticamente.
-
-A migração 015_community_tools.sql prepara as tabelas e metadados no PostgreSQL;
-o SQLite recebe as mesmas estruturas ao iniciar. A suíte inclui permissões,
-concorrência de ofertas, localização aproximada e alertas sem duplicação.
+Endpoints de diagnóstico:
+
+| Endpoint | Finalidade |
+| --- | --- |
+| `/api/health` | Disponibilidade HTTP. |
+| `/api/health/live` | Estado do processo principal. |
+| `/api/health/ready` | Prontidão das dependências configuradas. |
+| `/api/distributed/overview` | Visão autenticada dos eventos e serviços. |
+| `/metrics` | Métricas HTTP; protegido quando há token interno configurado. |
+
+Rotas protegidas usam `Authorization: Bearer <token>`. Operações administrativas
+também exigem permissão de administrador.
+
+</details>
+
+## Documentação
+
+| Artefato | Localização |
+| --- | --- |
+| API principal e regras de negócio | [backend.js](backend.js), [storage/](storage/) |
+| Cliente da API e telas | [src/services/api.js](src/services/api.js), [src/routes.jsx](src/routes.jsx) |
+| Persistência e evolução do banco | [migrations/](migrations/), [scripts/](scripts/) |
+| Publicação de eventos e integrações | [distributed/](distributed/) |
+| Serviços de notificações e impacto | [services/](services/) |
+| Stripe em teste | [docs/stripe-testing.md](docs/stripe-testing.md) |
+| Stripe em produção | [docs/stripe-production.md](docs/stripe-production.md) |
+| Testes automatizados | [test/](test/) |
+| Configuração de ambiente | [.env.example](.env.example) |
+| Contêineres e implantação | [Dockerfile](Dockerfile), [docker-compose.yml](docker-compose.yml), [railway.toml](railway.toml) |
+
+As migrações históricas são mantidas para preservar a evolução do banco,
+inclusive quando o nome do arquivo se refere a uma integração anterior.
+Dependências, builds, bancos locais, uploads e segredos são excluídos do
+versionamento pelo [.gitignore](.gitignore).
+
+## Autor
+
+**Marcus Vinicius Campos da Silva**
+
+Desenvolvimento e autoria do **ReUsa+**.
+
+[GitHub](https://github.com/MarcusVinicius-BCC) ·
+[Repositório](https://github.com/MarcusVinicius-BCC/Reusa-) ·
+[Sistema publicado](https://reusa.up.railway.app)
