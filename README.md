@@ -59,6 +59,8 @@ para computadores e dispositivos móveis.
 
 **Sistema publicado:** [https://reusa.up.railway.app](https://reusa.up.railway.app)
 
+**Documentação técnica completa:** [arquitetura, requisitos, banco de dados, API, operação e testes](docs/documentacao-tecnica.md).
+
 ## Funcionalidades
 
 | Área | O que a plataforma oferece |
@@ -217,6 +219,10 @@ Sem configuração de PostgreSQL e fora de `NODE_ENV=production`, a aplicação 
 SQLite em `data/reusa.sqlite` e armazenamento local. As integrações externas
 precisam de suas respectivas configurações. O arquivo [.env.example](.env.example)
 documenta as variáveis disponíveis; preencha apenas as que utilizar.
+
+O comando `npm start` não carrega `.env` automaticamente. Para usar esse arquivo,
+execute `node --env-file=.env backend.js` ou exporte as variáveis no terminal.
+Os procedimentos estão no [guia de instalação e operação](docs/operacao.md).
 
 ### Desenvolvimento
 
@@ -415,6 +421,10 @@ também exigem permissão de administrador.
 
 | Artefato | Localização |
 | --- | --- |
+| Documentação técnica completa | [Índice, escopo e rastreabilidade](docs/documentacao-tecnica.md) |
+| Arquitetura e regras | [Componentes e eventos](docs/arquitetura.md), [funcionalidades e regras](docs/funcionalidades-e-regras.md) |
+| Dados e contratos | [Banco de dados](docs/banco-de-dados.md), [API](docs/api.md) |
+| Operação e qualidade | [Instalação e operação](docs/operacao.md), [segurança e testes](docs/seguranca-e-testes.md) |
 | API principal e regras de negócio | [backend.js](backend.js), [storage/](storage/) |
 | Cliente da API e telas | [src/services/api.js](src/services/api.js), [src/routes.jsx](src/routes.jsx) |
 | Persistência e evolução do banco | [migrations/](migrations/), [scripts/](scripts/) |
