@@ -10,9 +10,9 @@
 | --- | --- |
 | Autor e desenvolvedor | **Marcus Vinicius Campos da Silva** |
 | Sistema publicado | [https://reusa.up.railway.app](https://reusa.up.railway.app) |
-| Repositório | [MarcusVinicius-BCC/Reusa-](https://github.com/MarcusVinicius-BCC/Reusa-) |
+| Repositório | [MarcusVinicius-BCC/ReUsa](https://github.com/MarcusVinicius-BCC/ReUsa) |
 | Versão declarada | `1.0.0`, conforme [package.json](../package.json) |
-| Código-base analisado | [`051a07c`](https://github.com/MarcusVinicius-BCC/Reusa-/commit/051a07c65108fff389a77c48b7fa42d62cc52405) |
+| Código-base analisado | [`051a07c`](https://github.com/MarcusVinicius-BCC/ReUsa/commit/051a07c65108fff389a77c48b7fa42d62cc52405) |
 | Atualização desta documentação | 19 de novembro de 2026 |
 | Idioma | Português do Brasil |
 

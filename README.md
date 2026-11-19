@@ -13,8 +13,8 @@
   <a href="https://reusa.up.railway.app">
     <img src="https://img.shields.io/badge/Acessar_o_sistema-ReUsa%2B-078653?style=for-the-badge&amp;logo=railway&amp;logoColor=white" alt="Acessar o ReUsa+ na Railway">
   </a>
-  <a href="https://github.com/MarcusVinicius-BCC/Reusa-/actions/workflows/stripe-checks.yml">
-    <img src="https://github.com/MarcusVinicius-BCC/Reusa-/actions/workflows/stripe-checks.yml/badge.svg" alt="Status da integração contínua">
+  <a href="https://github.com/MarcusVinicius-BCC/ReUsa/actions/workflows/stripe-checks.yml">
+    <img src="https://github.com/MarcusVinicius-BCC/ReUsa/actions/workflows/stripe-checks.yml/badge.svg" alt="Status da integração contínua">
   </a>
 </p>
 
@@ -206,8 +206,8 @@ e-mail. Google Fonts fornece as fontes e os ícones da interface.
 os modos de execução em contêineres.
 
 ```bash
-git clone https://github.com/MarcusVinicius-BCC/Reusa-.git
-cd Reusa-
+git clone https://github.com/MarcusVinicius-BCC/ReUsa.git
+cd ReUsa
 npm ci
 npm run build
 npm start
@@ -448,5 +448,5 @@ versionamento pelo [.gitignore](.gitignore).
 Desenvolvimento e autoria do **ReUsa+**.
 
 [GitHub](https://github.com/MarcusVinicius-BCC) ·
-[Repositório](https://github.com/MarcusVinicius-BCC/Reusa-) ·
+[Repositório](https://github.com/MarcusVinicius-BCC/ReUsa) ·
 [Sistema publicado](https://reusa.up.railway.app)

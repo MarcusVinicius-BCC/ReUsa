@@ -32,8 +32,8 @@ apenas para os perfis em contêineres. A versão do Node está declarada em
 [`package.json`](../package.json), [`.nvmrc`](../.nvmrc) e no [Dockerfile](../Dockerfile).
 
 ```bash
-git clone https://github.com/MarcusVinicius-BCC/Reusa-.git
-cd Reusa-
+git clone https://github.com/MarcusVinicius-BCC/ReUsa.git
+cd ReUsa
 npm ci
 npm run build
 npm start
